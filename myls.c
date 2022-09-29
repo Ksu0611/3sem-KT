@@ -11,9 +11,37 @@
 #include <grp.h>
 #include <time.h>
 
-
-
-
+/*void strmode(int mode, char * buff) 
+{
+    buf[0] = '-';
+    if (S_IWUSR & mode)
+        buff[1] = 'r';
+    else
+        buff[1] = '-';
+    if (S_IXUSR & mode)
+        buff[2] = 'w';
+    else
+        buff[2] = '-';
+    if (S_IXUSR & mode)
+        buff[3] = 'x';
+    else
+        buff[3] = '-';
+    if (S_IRGRP & mode)
+        buff[4] = 'r';
+    else
+        buff[4] = '-';
+    if (S_IWGRP & mode)
+        buff[5] = 'w';
+    else
+        buff[5] = '-';
+    if (S_IXGRP & mode)
+        buff[6] = 'x';
+    else
+        buff[6] = '-';
+    buff[7] = '-';
+    buff[8] = '-';
+    buff[9] = '-';
+}*/
 
 int main(int argc, char **argv)
 {
@@ -55,9 +83,10 @@ int main(int argc, char **argv)
         k = opendir(".");
     }
     struct dirent* dirs;
+    struct stat* buf = (struct stat*) calloc (1, sizeof(*buf));
+    char * buff;
 
-
-	if (flag_a == 1)
+	if ((flag_a == 1) && (flag_l == 0))
     {
         while ((dirs = readdir(k)) != NULL)
         {
@@ -66,7 +95,7 @@ int main(int argc, char **argv)
         }
     }
     
-    if (flag_a == 0)
+    if ((flag_a == 0) && (flag_l == 0))
     {
       
         if (argv[optind] == NULL)
@@ -104,24 +133,126 @@ int main(int argc, char **argv)
         
     }
 
-
-   /* struct stat* buf;
-
-
-
-    if (flag_l == 1)
+    if ((flag_a == 1) && (flag_l == 1))
     {
+        while ((dirs = readdir(k)) != NULL)
+        {
+  
+            printf("%s ", dirs->d_name);
+            stat(dirs->d_name,  buf);
+    printf((S_ISDIR(buf->st_mode))  ? "d" : "-"); 
+    printf((buf->st_mode & S_IRUSR) ? "r" : "-");
+    printf((buf->st_mode & S_IWUSR) ? "w" : "-");
+    printf((buf->st_mode & S_IXUSR) ? "x" : "-");
+    printf((buf->st_mode & S_IRGRP) ? "r" : "-");
+    printf((buf->st_mode & S_IWGRP) ? "w" : "-");
+    printf((buf->st_mode & S_IXGRP) ? "x" : "-");
+    printf((buf->st_mode & S_IROTH) ? "r" : "-");
+    printf((buf->st_mode & S_IWOTH) ? "w" : "-");
+    printf((buf->st_mode & S_IXOTH) ? "x " : "- ");
+                    printf("%d ", buf->st_nlink);
+                    printf("%d ", buf->st_gid);
+                    printf("%d ", buf->st_rdev);
+                    printf("%d ", buf->st_blocks);
+                    printf("%d ", buf->st_atime);
+                    printf("%d \n", buf->st_ctime);
+        }
+    }
+
+
+
+    if ((flag_a == 0) && (flag_l == 1))
+    {
+      
         if (argv[optind] == NULL)
         {
             while ((dirs = readdir(k)) != NULL)
             {
-                printf("%s ", dirs->d_name);
-                stat(dirs->d_name,  buf);
-                printf("%n 55555\n", buf->st_mode);
+            
+                if ('.' != dirs->d_name[0])
+                {
+
+                    printf("%s ", dirs->d_name);
+                    stat(dirs->d_name,  buf);
+    printf((S_ISDIR(buf->st_mode))  ? "d" : "-"); 
+    printf((buf->st_mode & S_IRUSR) ? "r" : "-");
+    printf((buf->st_mode & S_IWUSR) ? "w" : "-");
+    printf((buf->st_mode & S_IXUSR) ? "x" : "-");
+    printf((buf->st_mode & S_IRGRP) ? "r" : "-");
+    printf((buf->st_mode & S_IWGRP) ? "w" : "-");
+    printf((buf->st_mode & S_IXGRP) ? "x" : "-");
+    printf((buf->st_mode & S_IROTH) ? "r" : "-");
+    printf((buf->st_mode & S_IWOTH) ? "w" : "-");
+    printf((buf->st_mode & S_IXOTH) ? "x " : "- ");
+                    printf("%d ", buf->st_nlink);
+                    printf("%d ", buf->st_gid);
+                    printf("%d ", buf->st_rdev);
+                    printf("%d ", buf->st_blocks);
+                    printf("%d ", buf->st_atime);
+                    printf("%d \n", buf->st_ctime);
+                }
+            
             }
         }
+        
+        if((argv[optind] != NULL) && (strcmp(".", argv[optind]) == 0))
+        {
+            while ((dirs = readdir(k)) != NULL)
+            {
+                if ('.' != dirs->d_name[0])
+                {
+                    printf("%s ", dirs->d_name);
+                    stat(dirs->d_name,  buf);
+    printf((S_ISDIR(buf->st_mode))  ? "d" : "-"); 
+    printf((buf->st_mode & S_IRUSR) ? "r" : "-");
+    printf((buf->st_mode & S_IWUSR) ? "w" : "-");
+    printf((buf->st_mode & S_IXUSR) ? "x" : "-");
+    printf((buf->st_mode & S_IRGRP) ? "r" : "-");
+    printf((buf->st_mode & S_IWGRP) ? "w" : "-");
+    printf((buf->st_mode & S_IXGRP) ? "x" : "-");
+    printf((buf->st_mode & S_IROTH) ? "r" : "-");
+    printf((buf->st_mode & S_IWOTH) ? "w" : "-");
+    printf((buf->st_mode & S_IXOTH) ? "x " : "- ");
+                    printf("%d ", buf->st_nlink);
+                    printf("%d ", buf->st_gid);
+                    printf("%d ", buf->st_rdev);
+                    printf("%d ", buf->st_blocks);
+                    printf("%d ", buf->st_atime);
+                    printf("%d \n", buf->st_ctime);                
+                }
+            }
+        }
+        if((argv[optind] != NULL) && (strcmp("..", argv[optind]) == 0))
+        {
+            k = opendir("..");
+            while ((dirs = readdir(k)) != NULL)
+            {
+                if ('.' != dirs->d_name[0])
+                {
+                    printf("%s ", dirs->d_name);
+                    stat(dirs->d_name,  buf);
+    printf((S_ISDIR(buf->st_mode))  ? "d" : "-"); 
+    printf((buf->st_mode & S_IRUSR) ? "r" : "-");
+    printf((buf->st_mode & S_IWUSR) ? "w" : "-");
+    printf((buf->st_mode & S_IXUSR) ? "x" : "-");
+    printf((buf->st_mode & S_IRGRP) ? "r" : "-");
+    printf((buf->st_mode & S_IWGRP) ? "w" : "-");
+    printf((buf->st_mode & S_IXGRP) ? "x" : "-");
+    printf((buf->st_mode & S_IROTH) ? "r" : "-");
+    printf((buf->st_mode & S_IWOTH) ? "w" : "-");
+    printf((buf->st_mode & S_IXOTH) ? "x " : "- ");
+                    printf("%d ", buf->st_nlink);
+                    printf("%d ", buf->st_gid);
+                    printf("%d ", buf->st_rdev);
+                    printf("%d ", buf->st_blocks);
+                    printf("%d ", buf->st_atime);
+                    printf("%d \n", buf->st_ctime);
+                }
+            }  
+        }
+        
     }
-*/
+
 
 
 	return 0;
