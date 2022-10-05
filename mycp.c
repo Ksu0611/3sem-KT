@@ -10,6 +10,8 @@
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
+#include <errno.h>
+extern int errno;
 
 int main(int argc, char **argv)
 {
@@ -25,6 +27,7 @@ int main(int argc, char **argv)
     int opt;
     const char short_option[] = "hvif";
     
+    char yesno;
     int flag_h = 0, flag_v = 0, flag_i = 0, flag_f = 0;
     
     
@@ -43,14 +46,32 @@ int main(int argc, char **argv)
         case '?': printf("Unknown parameter: -%c\n", optopt);
         }
     }
-
     if (flag_h == 1)
     {
         printf("Эта программа копирует содержимое одного файла в другой\n");
         _Exit (EXIT_SUCCESS);
     }
+    if (flag_i == 1)
+    {
+        printf("are you sure???\n");
+        scanf("%c", &yesno);
+        if (yesno == 'n')
+        {
+            _Exit (EXIT_SUCCESS);
+        }
+    }
+    const char* file = argv[optind + 1];
     FILE* f1 = fopen(argv[optind], "r" );
     FILE* f2 = fopen(argv[optind + 1] , "w" );
+
+    if (f2 == NULL && (errno == 13))
+    {
+        if (flag_f == 1)
+        {
+            remove(file);
+            f2 = fopen(file, "w");
+        }
+    }
     char* buff = (char*)malloc(10000*sizeof(char));
     long int l = fread(buff, sizeof(buff[0]), 100000, f1);
     fwrite(buff, sizeof(buff[0]), l, f2);
