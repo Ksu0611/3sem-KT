@@ -15,30 +15,39 @@ int main(int argc, char **argv)
 {
 	const struct option long_option[] =
     {
-        {"all", no_argument, NULL, 'a'},
-        {"long", no_argument, NULL, 'l'}, 
-        {"recursive", no_argument, NULL, 'R'},
+        {"help", no_argument, NULL, 'h'},
+        {"verbose", no_argument, NULL, 'v'}, 
+        {"interactive", no_argument, NULL, 'i'},
+        {"force", no_argument, NULL, 'f'},
         {NULL, no_argument, NULL, 0}
     };
 	int long_index;
     int opt;
-    const char short_option[] = "alR";
+    const char short_option[] = "hvif";
     
-    int flag_a = 0, flag_l = 0, flag_R = 0;
+    int flag_h = 0, flag_v = 0, flag_i = 0, flag_f = 0;
     
     
     while((opt = getopt_long(argc, argv, short_option, long_option, &long_index)) != -1)
     {
         switch(opt)
         {
-        case 'a': flag_a = 1;
+        case 'h': flag_h = 1;
             break;
-        case 'l': flag_l = 1;
+        case 'v': flag_v = 1;
             break;
-        case 'R': flag_R = 1;
+        case 'i': flag_i = 1;
+            break;
+        case 'f': flag_f = 1;
             break;
         case '?': printf("Unknown parameter: -%c\n", optopt);
         }
+    }
+
+    if (flag_h == 1)
+    {
+        printf("Эта программа копирует содержимое одного файла в другой\n");
+        _Exit (EXIT_SUCCESS);
     }
     FILE* f1 = fopen(argv[optind], "r" );
     FILE* f2 = fopen(argv[optind + 1] , "w" );
@@ -47,5 +56,9 @@ int main(int argc, char **argv)
     fwrite(buff, sizeof(buff[0]), l, f2);
     fclose(f1);
     fclose(f2);
+    if (flag_v == 1)
+    {
+        printf("%s > %s \n", argv[optind], argv[optind + 1]);
+    }
     return 0;
 }
